@@ -99,9 +99,6 @@ function loginForm() {
             this.error = '';
 
             try {
-                // Get CSRF cookie first
-                await fetch('/sanctum/csrf-cookie', { credentials: 'same-origin' });
-
                 const res = await fetch('/api/login', {
                     method: 'POST',
                     headers: {
@@ -121,11 +118,14 @@ function loginForm() {
                 }
 
                 // Redirect berdasarkan role
-                if (data.user.role === 'kasir') {
-                    window.location.href = '/pos';
-                } else {
-                    window.location.href = '/dashboard';
-                }
+                const redirects = {
+                    kasir: '/pos',
+                    resepsionis: '/booking/create',
+                    manajer: '/dashboard',
+                    super_admin: '/dashboard',
+                };
+
+                window.location.href = redirects[data.user.role] || '/dashboard';
             } catch (e) {
                 this.error = 'Koneksi gagal. Coba lagi nanti.';
             } finally {

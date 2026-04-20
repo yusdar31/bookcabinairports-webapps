@@ -25,11 +25,13 @@ Route::get('/health', fn () => response()->json(['status' => 'ok', 'timestamp' =
 Route::post('/webhooks/midtrans', [PaymentController::class, 'midtransWebhook']);
 
 // --- Auth ---
-Route::post('/login', [AuthController::class, 'login']);
-Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:web');
+Route::middleware('web')->group(function () {
+    Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:web');
+});
 
 // --- Protected routes ---
-Route::middleware(['auth:web', 'active'])->group(function () {
+Route::middleware(['web', 'auth:web', 'active'])->group(function () {
 
     Route::get('/me', fn () => request()->user());
 
