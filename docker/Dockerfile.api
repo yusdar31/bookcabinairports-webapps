@@ -1,26 +1,20 @@
 FROM golang:1.22-alpine AS build
 
 WORKDIR /src
-RUN cat <<'EOF' > main.go
-package main
 
-import (
-  "fmt"
-  "net/http"
-)
+COPY agent/go.mod agent/go.sum ./
+RUN go mod download
 
-func main() {
-  http.HandleFunc("/health", func(w http.ResponseWriter, _ *http.Request) {
-    fmt.Fprint(w, "ok")
-  })
-  _ = http.ListenAndServe(":9000", nil)
-}
-EOF
-RUN go build -o /booking-agent main.go
+COPY agent/ ./
+
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o /booking-agent .
 
 FROM alpine:3.20
 
-RUN apk add --no-cache ca-certificates
+RUN apk add --no-cache ca-certificates tzdata
+
 COPY --from=build /booking-agent /usr/local/bin/booking-agent
+
 EXPOSE 9000
+
 CMD ["/usr/local/bin/booking-agent"]

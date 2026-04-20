@@ -1,0 +1,11 @@
+{
+  "commands": [
+    "sudo docker ps --format \"{{.Names}}|{{.Status}}|{{.Ports}}\"",
+    "sudo docker logs --tail 200 bookcabin-app || true",
+    "curl -i http://localhost/health || true",
+    "curl -i http://localhost/api/health || true",
+    "sudo docker exec bookcabin-app sh -lc 'printenv | sort | grep -E \"APP_ENV|DB_|REDIS_|BOOKING_AGENT_URL\" || true'",
+    "sudo docker exec bookcabin-app sh -lc 'ls -la /var/www/html/storage/logs || true'",
+    "sudo docker exec bookcabin-app sh -lc 'if [ -f /var/www/html/storage/logs/laravel.log ]; then tail -n 100 /var/www/html/storage/logs/laravel.log; fi'"
+  ]
+}

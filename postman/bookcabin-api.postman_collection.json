@@ -1,0 +1,95 @@
+{
+	"info": {
+		"_postman_id": "4ff0e68d-806b-4e6f-bb17-76b6bb17f8a7",
+		"name": "Bookcabin Main API",
+		"description": "Koleksi endpoint utama untuk aplikasi Bookcabin (Hotel & POS)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Accept", "value": "application/json" },
+							{ "key": "Content-Type", "value": "application/json" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"kasir@bookcabin.test\",\n    \"password\": \"password\"\n}"
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/api/login",
+							"host": ["{{BASE_URL}}"],
+							"path": ["api", "login"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "POS System",
+			"item": [
+				{
+					"name": "Sync Offline Transactions",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Accept", "value": "application/json" },
+							{ "key": "Content-Type", "value": "application/json" },
+							{ "key": "Authorization", "value": "Bearer {{AUTH_TOKEN}}" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"transactions\": [\n        {\n            \"outlet_id\": 1,\n            \"offline_id\": \"uuid-local-1\",\n            \"payment_method\": \"cash\",\n            \"items\": [\n                { \"menu_id\": 1, \"quantity\": 2 }\n            ]\n        }\n    ]\n}"
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/api/transactions/sync",
+							"host": ["{{BASE_URL}}"],
+							"path": ["api", "transactions", "sync"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Hotel Bookings",
+			"item": [
+				{
+					"name": "Check Availability",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Accept", "value": "application/json" },
+							{ "key": "Authorization", "value": "Bearer {{AUTH_TOKEN}}" }
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/api/rooms/availability?check_in=2026-05-01T14:00&check_out=2026-05-02T12:00",
+							"host": ["{{BASE_URL}}"],
+							"path": ["api", "rooms", "availability"],
+							"query": [
+								{ "key": "check_in", "value": "2026-05-01T14:00" },
+								{ "key": "check_out", "value": "2026-05-02T12:00" }
+							]
+						}
+					}
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "BASE_URL",
+			"value": "http://localhost",
+			"type": "default"
+		},
+		{
+			"key": "AUTH_TOKEN",
+			"value": "your-token-here",
+			"type": "default"
+		}
+	]
+}

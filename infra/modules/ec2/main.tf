@@ -12,11 +12,21 @@ locals {
 
     if command -v dnf >/dev/null 2>&1; then
       dnf update -y
-      dnf install -y docker curl awscli
+      dnf install -y docker curl unzip awscli
     elif command -v apt-get >/dev/null 2>&1; then
       export DEBIAN_FRONTEND=noninteractive
       apt-get update -y
-      apt-get install -y docker.io curl awscli
+      apt-get install -y curl unzip
+      if ! command -v docker >/dev/null 2>&1; then
+        curl -fsSL https://get.docker.com -o /tmp/get-docker.sh
+        sh /tmp/get-docker.sh
+      fi
+      if ! command -v aws >/dev/null 2>&1; then
+        cd /tmp
+        curl -fsSL https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip -o awscliv2.zip
+        unzip -q -o awscliv2.zip
+        ./aws/install --update
+      fi
     else
       echo "Unsupported package manager" >&2
       exit 1

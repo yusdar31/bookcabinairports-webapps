@@ -19,7 +19,7 @@ COPY app/ .
 RUN npm run build 2>/dev/null || mkdir -p public/build
 
 # ===== Stage 3: Production image =====
-FROM php:8.3-fpm-alpine
+FROM php:8.4-fpm-alpine
 
 # Install PHP extensions yang dibutuhkan Laravel
 RUN apk add --no-cache \
@@ -31,6 +31,7 @@ RUN apk add --no-cache \
     icu-dev \
     oniguruma-dev \
     libzip-dev \
+    $PHPIZE_DEPS \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j$(nproc) \
         pdo_mysql \
@@ -42,8 +43,7 @@ RUN apk add --no-cache \
         intl \
         zip \
         opcache \
-    && pecl install redis \
-    && docker-php-ext-enable redis
+    && apk del $PHPIZE_DEPS
 
 # Konfigurasi PHP untuk production
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
