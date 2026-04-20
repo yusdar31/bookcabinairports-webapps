@@ -6,6 +6,7 @@ services:
       - "80:80"
     environment:
       APP_ENV: free-tier
+      APP_KEY: ${APP_KEY}
       DB_HOST: ${DB_HOST}
       DB_PORT: 3306
       DB_DATABASE: ${DB_DATABASE}

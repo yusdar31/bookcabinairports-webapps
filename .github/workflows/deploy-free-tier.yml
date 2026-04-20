@@ -121,6 +121,11 @@ jobs:
             aws ecr get-login-password --region ap-southeast-1 | docker login --username AWS --password-stdin $(echo ${{ env.ECR_REPO_APP }} | cut -d/ -f1)
             docker pull ${{ env.ECR_REPO_APP }}:latest
             docker pull ${{ env.ECR_REPO_API }}:latest
+
+            if ! grep -q "^APP_KEY=" /home/${{ env.EC2_USER }}/.env; then
+              echo "APP_KEY=base64:$(openssl rand -base64 32)" >> /home/${{ env.EC2_USER }}/.env
+            fi
+
             docker compose -f /home/${{ env.EC2_USER }}/docker-compose.prod.yml down || true
             docker compose -f /home/${{ env.EC2_USER }}/docker-compose.prod.yml up -d
             docker image prune -f

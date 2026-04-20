@@ -13,10 +13,10 @@ FROM node:20-alpine AS assets
 
 WORKDIR /app
 COPY app/package.json app/package-lock.json* ./
-RUN npm ci --silent 2>/dev/null || true
+RUN npm install
 
 COPY app/ .
-RUN npm run build 2>/dev/null || mkdir -p public/build
+RUN npm run build
 
 # ===== Stage 3: Production image =====
 FROM php:8.4-fpm-alpine
