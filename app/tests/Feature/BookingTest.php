@@ -97,7 +97,7 @@ class BookingTest extends TestCase
             ->postJson('/api/bookings', [
                 'room_id' => $this->room->id,
                 'guest_name' => 'PIN Test',
-                'check_in' => now()->subMinute()->toISOString(),
+                'check_in' => now()->addMinute()->toISOString(),
                 'check_out' => now()->addHours(6)->toISOString(),
             ]);
 

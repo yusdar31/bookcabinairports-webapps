@@ -31,7 +31,8 @@ Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:web'
 // --- Protected routes ---
 Route::middleware('auth:web')->group(function () {
 
-    Route::get('/me', fn () => request()->user());
+    Route::middleware('role:resepsionis,kasir,manajer,super_admin')
+        ->get('/me', fn () => request()->user());
 
     // Room availability (resepsionis + manajer)
     Route::middleware('role:resepsionis,manajer')
