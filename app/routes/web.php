@@ -19,6 +19,6 @@ Route::get('/login', fn () => view('auth.login'))->name('login');
 Route::middleware('auth')->group(function () {
     Route::get('/pos', [PosController::class, 'index'])->middleware('role:kasir,manajer');
     Route::get('/booking/create', fn () => view('booking.create'))->middleware('role:resepsionis,manajer');
-    Route::get('/dashboard', fn () => 'Dashboard coming soon')->middleware('role:manajer');
+    Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])->middleware('role:manajer');
     Route::post('/logout', fn () => (auth()->logout() ?: redirect('/login')))->name('logout');
 });
