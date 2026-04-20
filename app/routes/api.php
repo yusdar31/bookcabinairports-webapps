@@ -26,10 +26,10 @@ Route::post('/webhooks/midtrans', [PaymentController::class, 'midtransWebhook'])
 
 // --- Auth ---
 Route::post('/login', [AuthController::class, 'login']);
-Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
+Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:web');
 
 // --- Protected routes ---
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware('auth:web')->group(function () {
 
     Route::get('/me', fn () => request()->user());
 
