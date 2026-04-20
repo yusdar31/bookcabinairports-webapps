@@ -6,7 +6,7 @@ COPY app/composer.json app/composer.lock* ./
 RUN composer install --no-dev --no-scripts --no-autoloader --prefer-dist
 
 COPY app/ .
-RUN composer dump-autoload --optimize --no-dev
+RUN composer dump-autoload --optimize --no-dev --no-scripts
 
 # ===== Stage 2: Frontend assets (jika ada) =====
 FROM node:20-alpine AS assets
