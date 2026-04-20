@@ -123,4 +123,4 @@ jobs:
       - name: Health check
         run: |
           sleep 20
-          curl -f http://${{ env.EC2_HOST }}/health
+          curl -f http://${{ env.EC2_HOST }}/api/health

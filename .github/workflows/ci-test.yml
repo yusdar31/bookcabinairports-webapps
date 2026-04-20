@@ -84,7 +84,7 @@ jobs:
         working-directory: .
         run: |
           sleep 10
-          curl -f http://localhost:8080/health
+          curl -f http://localhost:8080/api/health
           curl -f http://localhost:9000/health
 
       - name: Tear down
