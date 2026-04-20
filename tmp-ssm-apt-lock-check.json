@@ -1,0 +1,9 @@
+{
+  "commands": [
+    "ps -ef | egrep 'apt|dpkg|unattended|needrestart' | grep -v egrep || true",
+    "sudo lsof /var/lib/dpkg/lock-frontend || true",
+    "sudo lsof /var/lib/apt/lists/lock || true",
+    "sudo tail -n 50 /var/log/apt/term.log || true",
+    "sudo tail -n 50 /var/log/unattended-upgrades/unattended-upgrades.log || true"
+  ]
+}

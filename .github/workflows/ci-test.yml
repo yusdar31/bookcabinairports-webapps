@@ -1,0 +1,93 @@
+name: CI Test
+
+on:
+  push:
+    branches:
+      - "**"
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: app
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: testing
+          MYSQL_DATABASE: bookcabin_test
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -ptesting"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: pdo_mysql, mbstring, bcmath, gd, intl, zip
+          coverage: none
+
+      - name: Install Composer dependencies
+        run: composer install --no-progress --prefer-dist
+
+      - name: Prepare Laravel app
+        env:
+          APP_ENV: testing
+          DB_CONNECTION: mysql
+          DB_HOST: 127.0.0.1
+          DB_PORT: 3306
+          DB_DATABASE: bookcabin_test
+          DB_USERNAME: root
+          DB_PASSWORD: testing
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+          php artisan migrate --force
+
+      - name: Run PHPUnit tests
+        env:
+          APP_ENV: testing
+          DB_CONNECTION: mysql
+          DB_HOST: 127.0.0.1
+          DB_PORT: 3306
+          DB_DATABASE: bookcabin_test
+          DB_USERNAME: root
+          DB_PASSWORD: testing
+        run: php artisan test
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.22"
+
+      - name: Build API image
+        working-directory: .
+        run: docker build -t bookcabin-api:test -f docker/Dockerfile.api .
+
+      - name: Build app image
+        working-directory: .
+        run: docker build -t bookcabin-app:test -f docker/Dockerfile.app .
+
+      - name: Run compose smoke test
+        working-directory: .
+        run: docker compose -f docker/docker-compose.yml up -d --build
+
+      - name: Check services
+        working-directory: .
+        run: |
+          sleep 10
+          curl -f http://localhost:8080/health
+          curl -f http://localhost:9000/health
+
+      - name: Tear down
+        if: always()
+        working-directory: .
+        run: docker compose -f docker/docker-compose.yml down -v

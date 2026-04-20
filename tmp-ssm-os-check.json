@@ -1,0 +1,10 @@
+{
+  "commands": [
+    "uname -a",
+    "cat /etc/os-release || true",
+    "command -v docker || true",
+    "systemctl status docker --no-pager || true",
+    "cloud-init status --long || true",
+    "tail -n 100 /var/log/cloud-init-output.log || true"
+  ]
+}

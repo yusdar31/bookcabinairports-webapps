@@ -1,0 +1,126 @@
+name: Deploy Free Tier
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+env:
+  AWS_REGION: ap-southeast-1
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: app
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: testing
+          MYSQL_DATABASE: bookcabin_test
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -ptesting"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: pdo_mysql, mbstring, bcmath, gd, intl, zip
+          coverage: none
+
+      - name: Install Composer dependencies
+        run: composer install --no-progress --prefer-dist
+
+      - name: Prepare Laravel app
+        env:
+          APP_ENV: testing
+          DB_CONNECTION: mysql
+          DB_HOST: 127.0.0.1
+          DB_PORT: 3306
+          DB_DATABASE: bookcabin_test
+          DB_USERNAME: root
+          DB_PASSWORD: testing
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+          php artisan migrate --force
+
+      - name: Run PHPUnit feature tests
+        env:
+          APP_ENV: testing
+          DB_CONNECTION: mysql
+          DB_HOST: 127.0.0.1
+          DB_PORT: 3306
+          DB_DATABASE: bookcabin_test
+          DB_USERNAME: root
+          DB_PASSWORD: testing
+        run: php artisan test
+
+      - name: Build app image
+        run: docker build -t bookcabin-app:test -f ../docker/Dockerfile.app ..
+
+      - name: Build agent image
+        working-directory: .
+        run: docker build -t bookcabin-api:test -f docker/Dockerfile.api .
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    env:
+      ECR_REPO_APP: ${{ secrets.ECR_REPO_APP }}
+      ECR_REPO_API: ${{ secrets.ECR_REPO_API }}
+      EC2_HOST: ${{ secrets.EC2_HOST }}
+      EC2_USER: ${{ secrets.EC2_USER }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to ECR
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build and push images
+        run: |
+          docker build -t $ECR_REPO_APP:${{ github.sha }} -f docker/Dockerfile.app .
+          docker build -t $ECR_REPO_API:${{ github.sha }} -f docker/Dockerfile.api .
+          docker tag $ECR_REPO_APP:${{ github.sha }} $ECR_REPO_APP:latest
+          docker tag $ECR_REPO_API:${{ github.sha }} $ECR_REPO_API:latest
+          docker push $ECR_REPO_APP:${{ github.sha }}
+          docker push $ECR_REPO_APP:latest
+          docker push $ECR_REPO_API:${{ github.sha }}
+          docker push $ECR_REPO_API:latest
+
+      - name: Deploy to EC2 over SSH
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ env.EC2_HOST }}
+          username: ${{ env.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            set -e
+            aws ecr get-login-password --region ap-southeast-1 | docker login --username AWS --password-stdin $(echo ${{ env.ECR_REPO_APP }} | cut -d/ -f1)
+            docker pull ${{ env.ECR_REPO_APP }}:latest
+            docker pull ${{ env.ECR_REPO_API }}:latest
+            docker compose -f /home/${{ env.EC2_USER }}/docker-compose.prod.yml down || true
+            docker compose -f /home/${{ env.EC2_USER }}/docker-compose.prod.yml up -d
+            docker image prune -f
+
+      - name: Health check
+        run: |
+          sleep 20
+          curl -f http://${{ env.EC2_HOST }}/health

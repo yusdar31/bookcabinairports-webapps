@@ -1,0 +1,68 @@
+{
+  "info": {
+    "name": "Bookcabin OTA Webhook Simulation",
+    "description": "Simulasi OTA webhook ke API Gateway -> SQS untuk Bookcabin free-tier.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "api_gateway_url", "value": "https://3r9t2pqnji.execute-api.ap-southeast-1.amazonaws.com/v1", "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "booking.created - Agoda",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "url": "{{api_gateway_url}}/webhook/ota",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"event_type\": \"booking.created\",\n  \"provider\": \"agoda\",\n  \"payload\": {\n    \"ota_booking_id\": \"AGD-2026-001234\",\n    \"room_id\": 1,\n    \"guest_name\": \"Andi Yusdar\",\n    \"guest_email\": \"andi@example.com\",\n    \"guest_phone\": \"08123456789\",\n    \"check_in\": \"2026-05-01T14:00:00+08:00\",\n    \"check_out\": \"2026-05-02T12:00:00+08:00\",\n    \"total_price\": 250000\n  }\n}"
+        }
+      }
+    },
+    {
+      "name": "booking.modified - Traveloka",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "url": "{{api_gateway_url}}/webhook/ota",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"event_type\": \"booking.modified\",\n  \"provider\": \"traveloka\",\n  \"payload\": {\n    \"ota_booking_id\": \"TVK-2026-005678\",\n    \"check_in\": \"2026-05-03T14:00:00+08:00\",\n    \"check_out\": \"2026-05-05T12:00:00+08:00\",\n    \"total_price\": 300000\n  }\n}"
+        }
+      }
+    },
+    {
+      "name": "booking.cancelled - Agoda",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "url": "{{api_gateway_url}}/webhook/ota",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"event_type\": \"booking.cancelled\",\n  \"provider\": \"agoda\",\n  \"payload\": {\n    \"ota_booking_id\": \"AGD-2026-001234\"\n  }\n}"
+        }
+      }
+    },
+    {
+      "name": "payment.confirmed - Agoda",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "url": "{{api_gateway_url}}/webhook/ota",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"event_type\": \"payment.confirmed\",\n  \"provider\": \"agoda\",\n  \"payload\": {\n    \"ota_booking_id\": \"AGD-2026-001234\"\n  }\n}"
+        }
+      }
+    }
+  ]
+}

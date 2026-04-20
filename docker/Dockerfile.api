@@ -1,0 +1,26 @@
+FROM golang:1.22-alpine AS build
+
+WORKDIR /src
+RUN cat <<'EOF' > main.go
+package main
+
+import (
+  "fmt"
+  "net/http"
+)
+
+func main() {
+  http.HandleFunc("/health", func(w http.ResponseWriter, _ *http.Request) {
+    fmt.Fprint(w, "ok")
+  })
+  _ = http.ListenAndServe(":9000", nil)
+}
+EOF
+RUN go build -o /booking-agent main.go
+
+FROM alpine:3.20
+
+RUN apk add --no-cache ca-certificates
+COPY --from=build /booking-agent /usr/local/bin/booking-agent
+EXPOSE 9000
+CMD ["/usr/local/bin/booking-agent"]

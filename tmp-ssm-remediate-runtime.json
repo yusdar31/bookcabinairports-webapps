@@ -1,0 +1,24 @@
+{
+  "commands": [
+    "set -eu",
+    "export DEBIAN_FRONTEND=noninteractive",
+    "if command -v dnf >/dev/null 2>&1; then sudo dnf update -y && sudo dnf install -y docker curl awscli; elif command -v apt-get >/dev/null 2>&1; then sudo apt-get update -y && sudo apt-get install -y docker.io curl awscli; else echo 'Unsupported package manager' >&2; exit 1; fi",
+    "sudo systemctl enable docker",
+    "sudo systemctl restart docker",
+    "sudo usermod -aG docker ubuntu || true",
+    "sudo mkdir -p /usr/local/lib/docker/cli-plugins",
+    "if [ ! -x /usr/local/lib/docker/cli-plugins/docker-compose ]; then sudo curl -SL https://github.com/docker/compose/releases/latest/download/docker-compose-linux-x86_64 -o /usr/local/lib/docker/cli-plugins/docker-compose && sudo chmod +x /usr/local/lib/docker/cli-plugins/docker-compose; fi",
+    "DB_PASSWORD=$(aws ssm get-parameter --name /bookcabin/free-tier/database/password --with-decryption --region ap-southeast-1 --query Parameter.Value --output text)",
+    "cat <<EOF | sudo tee /home/ubuntu/.env\nDB_HOST=bookcabin-free-tier-db.cvam4kquex6v.ap-southeast-1.rds.amazonaws.com\nDB_PORT=3306\nDB_DATABASE=bookcabin\nDB_USERNAME=admin\nDB_PASSWORD=$DB_PASSWORD\nREDIS_HOST=bookcabin-free-tier-redis.hauvgq.0001.apse1.cache.amazonaws.com\nREDIS_PORT=6379\nSQS_QUEUE_URL=https://sqs.ap-southeast-1.amazonaws.com/479149268499/bookcabin-ota-webhook-queue\nAWS_REGION=ap-southeast-1\nAPP_IMAGE=479149268499.dkr.ecr.ap-southeast-1.amazonaws.com/bookcabin-app:latest\nAPI_IMAGE=479149268499.dkr.ecr.ap-southeast-1.amazonaws.com/bookcabin-api:latest\nEOF",
+    "cat <<EOF | sudo tee /home/ubuntu/docker-compose.prod.yml\nservices:\n  app:\n    image: 479149268499.dkr.ecr.ap-southeast-1.amazonaws.com/bookcabin-app:latest\n    container_name: bookcabin-app\n    env_file:\n      - /home/ubuntu/.env\n    ports:\n      - \"80:80\"\n    environment:\n      APP_ENV: free-tier\n      BOOKING_AGENT_URL: http://booking-agent:9000\n    restart: unless-stopped\n  booking-agent:\n    image: 479149268499.dkr.ecr.ap-southeast-1.amazonaws.com/bookcabin-api:latest\n    container_name: bookcabin-booking-agent\n    env_file:\n      - /home/ubuntu/.env\n    ports:\n      - \"9000:9000\"\n    environment:\n      APP_ENV: free-tier\n    restart: unless-stopped\nEOF",
+    "sudo chown ubuntu:ubuntu /home/ubuntu/.env /home/ubuntu/docker-compose.prod.yml",
+    "aws ecr get-login-password --region ap-southeast-1 | sudo docker login --username AWS --password-stdin 479149268499.dkr.ecr.ap-southeast-1.amazonaws.com",
+    "sudo docker pull 479149268499.dkr.ecr.ap-southeast-1.amazonaws.com/bookcabin-app:latest",
+    "sudo docker pull 479149268499.dkr.ecr.ap-southeast-1.amazonaws.com/bookcabin-api:latest",
+    "sudo docker compose -f /home/ubuntu/docker-compose.prod.yml down || true",
+    "sudo docker compose -f /home/ubuntu/docker-compose.prod.yml up -d",
+    "sudo docker ps --format \"{{.Names}}|{{.Status}}|{{.Ports}}\"",
+    "curl -i http://localhost/health || true",
+    "curl -i http://localhost:9000/health || true"
+  ]
+}

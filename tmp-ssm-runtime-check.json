@@ -1,0 +1,8 @@
+{
+  "commands": [
+    "sudo docker ps --format \"{{.Names}}|{{.Status}}|{{.Ports}}\"",
+    "if [ -f /home/ec2-user/.env ]; then cat /home/ec2-user/.env; fi",
+    "curl -i http://localhost/health || true",
+    "curl -i http://localhost:9000/health || true"
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "commands": [
+    "ps -ef | egrep 'apt|dpkg|docker|containerd|curl|aws' | grep -v egrep || true",
+    "tail -n 50 /var/log/apt/history.log || true",
+    "tail -n 50 /var/log/dpkg.log || true",
+    "systemctl is-active docker || true",
+    "docker ps --format \"{{.Names}}|{{.Status}}|{{.Ports}}\" || true"
+  ]
+}

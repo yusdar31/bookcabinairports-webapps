@@ -1,0 +1,45 @@
+services:
+  app:
+    image: ${APP_IMAGE}
+    container_name: bookcabin-app
+    ports:
+      - "80:80"
+    environment:
+      APP_ENV: free-tier
+      DB_HOST: ${DB_HOST}
+      DB_PORT: 3306
+      DB_DATABASE: ${DB_DATABASE}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: 6379
+      BOOKING_AGENT_URL: http://booking-agent:9000
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  booking-agent:
+    image: ${API_IMAGE}
+    container_name: bookcabin-booking-agent
+    ports:
+      - "9000:9000"
+    environment:
+      APP_ENV: free-tier
+      DB_HOST: ${DB_HOST}
+      DB_PORT: 3306
+      DB_DATABASE: ${DB_DATABASE}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: 6379
+      SQS_QUEUE_URL: ${SQS_QUEUE_URL}
+      AWS_REGION: ${AWS_REGION}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:9000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3

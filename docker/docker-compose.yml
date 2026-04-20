@@ -1,0 +1,14 @@
+services:
+  app:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.app
+    ports:
+      - "8080:80"
+
+  booking-agent:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.api
+    ports:
+      - "9000:9000"

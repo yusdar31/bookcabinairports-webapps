@@ -1,0 +1,52 @@
+# Terraform
+.terraform/
+.terraform.lock.hcl
+*.tfstate
+*.tfstate.*
+crash.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+*.tfvars.bak
+infra/environments/*/terraform.secrets.auto.tfvars
+infra/environments/*/tf_error*.log
+infra/environments/*/tf_outputs*.json
+infra/environments/*/ami*.json
+infra/environments/*/instance-types*.json
+
+# Laravel / PHP
+app/.env
+app/.env.*
+!app/.env.example
+app/vendor/
+app/node_modules/
+app/storage/app/public/
+app/storage/logs/*.log
+app/storage/framework/cache/
+app/storage/framework/sessions/
+app/storage/framework/views/
+app/bootstrap/cache/
+app/public/hot
+app/public/storage
+
+# Golang agent binary
+agent/booking-agent
+agent/booking-agent-linux
+agent/*.exe
+
+# Sensitive files — JANGAN PERNAH COMMIT
+*.pem
+*.key
+id_rsa
+id_rsa.pub
+*.p12
+secrets.*
+.env.local
+.env.production
+
+# OS & Editor
+.DS_Store
+Thumbs.db
+.vscode/settings.json
+*.swp

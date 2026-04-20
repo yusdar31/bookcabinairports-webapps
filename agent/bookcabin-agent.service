@@ -1,0 +1,27 @@
+[Unit]
+Description=Bookcabin Golang Booking Agent (SQS Consumer)
+After=network.target
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/opt/bookcabin/agent
+ExecStart=/opt/bookcabin/agent/booking-agent
+Restart=on-failure
+RestartSec=5s
+StandardOutput=journal
+StandardError=journal
+
+# Environment variables — isi sesuai nilai dari AWS Console
+Environment="SQS_QUEUE_URL=https://sqs.ap-southeast-1.amazonaws.com/ACCOUNT_ID/bookcabin-ota-webhook-queue"
+Environment="AWS_DEFAULT_REGION=ap-southeast-1"
+Environment="AWS_ACCESS_KEY_ID=CHANGE_ME"
+Environment="AWS_SECRET_ACCESS_KEY=CHANGE_ME"
+Environment="DB_HOST=YOUR_RDS_ENDPOINT.ap-southeast-1.rds.amazonaws.com"
+Environment="DB_DATABASE=bookcabin"
+Environment="DB_USERNAME=admin"
+Environment="DB_PASSWORD=CHANGE_ME"
+
+[Install]
+WantedBy=multi-user.target
+
