@@ -37,7 +37,7 @@ jobs:
 
       - name: Prepare Laravel directories
         run: |
-          mkdir -p bootstrap/cache storage/framework/cache storage/framework/sessions storage/framework/views storage/logs
+          mkdir -p bootstrap/cache storage/framework/cache storage/framework/sessions storage/framework/views storage/logs tests/Unit
           chmod -R 775 bootstrap/cache storage
 
       - name: Install Composer dependencies
