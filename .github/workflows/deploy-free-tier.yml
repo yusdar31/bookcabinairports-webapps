@@ -125,11 +125,20 @@ jobs:
             if ! grep -q "^APP_KEY=" /home/${{ env.EC2_USER }}/.env; then
               echo "APP_KEY=base64:$(openssl rand -base64 32)" >> /home/${{ env.EC2_USER }}/.env
             fi
+            
+            if ! grep -q "^DB_CONNECTION=" /home/${{ env.EC2_USER }}/.env; then
+              echo "DB_CONNECTION=mysql" >> /home/${{ env.EC2_USER }}/.env
+            fi
 
             sed -i 's/^DB_PASSWORD=\$DB_PASSWORD$/DB_PASSWORD=BookcabinFreeTier2026!/' /home/${{ env.EC2_USER }}/.env
 
             docker compose -f /home/${{ env.EC2_USER }}/docker-compose.prod.yml down || true
             docker compose -f /home/${{ env.EC2_USER }}/docker-compose.prod.yml up -d
+            
+            # Tunggu beberapa detik agar container siap, lalu jalankan migrasi database
+            sleep 10
+            docker exec bookcabin-app php artisan migrate --force
+
             docker image prune -f
             
             echo "Waiting 20 seconds for containers to initialize..."

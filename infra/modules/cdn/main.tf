@@ -1,7 +1,6 @@
 resource "aws_cloudfront_distribution" "this" {
   enabled             = true
   comment             = "${var.name_prefix} CDN"
-  default_root_object = "index.html"
 
   origin {
     domain_name = var.origin_dns_name

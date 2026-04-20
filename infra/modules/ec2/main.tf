@@ -49,6 +49,7 @@ locals {
     echo '/swapfile none swap sw 0 0' >> /etc/fstab
 
     cat > /home/ec2-user/.env <<'ENVFILE'
+    DB_CONNECTION=mysql
     DB_HOST=${var.db_host}
     DB_PORT=3306
     DB_DATABASE=${var.db_name}
