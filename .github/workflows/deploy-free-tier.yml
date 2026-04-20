@@ -124,8 +124,8 @@ jobs:
             docker compose -f /home/${{ env.EC2_USER }}/docker-compose.prod.yml down || true
             docker compose -f /home/${{ env.EC2_USER }}/docker-compose.prod.yml up -d
             docker image prune -f
-
-      - name: Health check
-        run: |
-          sleep 20
-          curl -f http://${{ env.EC2_HOST }}/api/health
+            
+            echo "Waiting 20 seconds for containers to initialize..."
+            sleep 20
+            echo "Performing curl health check via localhost..."
+            curl -f http://localhost/api/health
