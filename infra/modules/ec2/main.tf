@@ -53,7 +53,7 @@ locals {
     DB_PORT=3306
     DB_DATABASE=${var.db_name}
     DB_USERNAME=${var.db_username}
-    DB_PASSWORD=$DB_PASSWORD
+    DB_PASSWORD=${var.db_password}
     REDIS_HOST=${var.redis_host}
     REDIS_PORT=6379
     SQS_QUEUE_URL=${var.sqs_queue_url}

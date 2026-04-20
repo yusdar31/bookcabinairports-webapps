@@ -126,6 +126,8 @@ jobs:
               echo "APP_KEY=base64:$(openssl rand -base64 32)" >> /home/${{ env.EC2_USER }}/.env
             fi
 
+            sed -i 's/^DB_PASSWORD=\$DB_PASSWORD$/DB_PASSWORD=BookcabinFreeTier2026!/' /home/${{ env.EC2_USER }}/.env
+
             docker compose -f /home/${{ env.EC2_USER }}/docker-compose.prod.yml down || true
             docker compose -f /home/${{ env.EC2_USER }}/docker-compose.prod.yml up -d
             docker image prune -f
