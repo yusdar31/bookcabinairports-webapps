@@ -6,6 +6,264 @@
 @source '../**/*.js';
 
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+        'Noto Color Emoji';
+    --font-display: 'Manrope', ui-sans-serif, system-ui, sans-serif;
+}
+
+:root {
+    --page-background: #0f172a;
+    --page-text: #e2e8f0;
+    --dashboard-background: #f8f9ff;
+    --dashboard-surface: #ffffff;
+    --dashboard-surface-low: #eff4ff;
+    --dashboard-surface-high: #dce9ff;
+    --dashboard-surface-highest: #d5e3fc;
+    --dashboard-primary: #3525cd;
+    --dashboard-primary-strong: #4f46e5;
+    --dashboard-text: #0d1c2e;
+    --dashboard-text-soft: #464555;
+    --dashboard-text-muted: #777587;
+    --dashboard-outline: rgba(199, 196, 216, 0.2);
+    --dashboard-shadow: 0 24px 50px rgba(13, 28, 46, 0.05);
+    --dashboard-shadow-strong: 0 22px 42px rgba(53, 37, 205, 0.2);
+}
+
+html {
+    background: var(--page-background);
+}
+
+body {
+    min-height: 100vh;
+    background: var(--page-background);
+    color: var(--page-text);
+}
+
+body.dashboard-page {
+    background:
+        radial-gradient(circle at top right, rgba(79, 70, 229, 0.16), transparent 34%),
+        radial-gradient(circle at bottom left, rgba(213, 227, 252, 0.95), transparent 30%),
+        var(--dashboard-background);
+    color: var(--dashboard-text);
+}
+
+body::-webkit-scrollbar,
+.dashboard-shell ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+body::-webkit-scrollbar-track,
+.dashboard-shell ::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+body::-webkit-scrollbar-thumb {
+    background: rgba(100, 116, 139, 0.6);
+    border-radius: 9999px;
+}
+
+.dashboard-shell ::-webkit-scrollbar-thumb {
+    background: rgba(119, 117, 135, 0.45);
+    border-radius: 9999px;
+}
+
+.dashboard-shell {
+    color: var(--dashboard-text);
+    font-family: var(--font-sans);
+}
+
+.dashboard-surface-card {
+    background: rgba(255, 255, 255, 0.86);
+    box-shadow: var(--dashboard-shadow);
+    backdrop-filter: blur(20px);
+}
+
+.dashboard-accent-card {
+    background: linear-gradient(135deg, var(--dashboard-primary), var(--dashboard-primary-strong));
+    box-shadow: var(--dashboard-shadow-strong);
+    color: #fff;
+}
+
+.dashboard-label {
+    color: var(--dashboard-text-muted);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+}
+
+.dashboard-title {
+    color: var(--dashboard-text);
+    font-family: var(--font-display);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+}
+
+.dashboard-shell .dashboard-display {
+    font-family: var(--font-display);
+    letter-spacing: -0.03em;
+}
+
+.dashboard-shell .dashboard-panel {
+    background: rgba(255, 255, 255, 0.86);
+    box-shadow: var(--dashboard-shadow);
+    backdrop-filter: blur(18px);
+}
+
+.dashboard-shell .dashboard-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    border-radius: 9999px;
+    background: var(--dashboard-surface-low);
+    color: var(--dashboard-primary);
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.4rem 0.75rem;
+}
+
+.dashboard-shell .dashboard-kpi {
+    position: relative;
+    overflow: hidden;
+}
+
+.dashboard-shell .dashboard-kpi::after {
+    content: '';
+    position: absolute;
+    inset-inline: 0;
+    bottom: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--dashboard-primary), var(--dashboard-primary-strong));
+    opacity: 0;
+    transition: opacity 180ms ease;
+}
+
+.dashboard-shell .dashboard-kpi:hover::after {
+    opacity: 1;
+}
+
+.dashboard-shell .dashboard-bar {
+    min-height: 3.5rem;
+}
+
+.dashboard-shell .dashboard-dot {
+    display: inline-block;
+    width: 0.24rem;
+    height: 0.24rem;
+    border-radius: 9999px;
+    background: currentColor;
+    opacity: 0.45;
+}
+
+.ops-shell {
+    min-height: 100vh;
+    background:
+        radial-gradient(circle at top left, rgba(56, 189, 248, 0.08), transparent 28%),
+        radial-gradient(circle at bottom right, rgba(37, 99, 235, 0.16), transparent 30%),
+        linear-gradient(180deg, #07111f 0%, #0f172a 55%, #111c30 100%);
+    color: #e2e8f0;
+}
+
+.ops-shell .ops-display {
+    font-family: var(--font-display);
+    letter-spacing: -0.03em;
+}
+
+.ops-shell .ops-panel {
+    background: rgba(15, 23, 42, 0.72);
+    border: 1px solid rgba(148, 163, 184, 0.14);
+    box-shadow: 0 20px 45px rgba(2, 6, 23, 0.32);
+    backdrop-filter: blur(18px);
+}
+
+.ops-shell .ops-panel-soft {
+    background: rgba(30, 41, 59, 0.72);
+    border: 1px solid rgba(148, 163, 184, 0.12);
+    box-shadow: 0 16px 34px rgba(2, 6, 23, 0.24);
+}
+
+.ops-shell .ops-kicker {
+    color: #94a3b8;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+}
+
+.ops-shell .ops-input,
+.ops-shell .ops-select,
+.ops-shell .ops-textarea {
+    width: 100%;
+    border-radius: 1rem;
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    background: rgba(15, 23, 42, 0.88);
+    color: #f8fafc;
+    transition: border-color 180ms ease, box-shadow 180ms ease, background-color 180ms ease;
+}
+
+.ops-shell .ops-input::placeholder,
+.ops-shell .ops-textarea::placeholder {
+    color: #64748b;
+}
+
+.ops-shell .ops-input:focus,
+.ops-shell .ops-select:focus,
+.ops-shell .ops-textarea:focus {
+    border-color: rgba(56, 189, 248, 0.65);
+    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.14);
+    outline: none;
+}
+
+.ops-shell .ops-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    border-radius: 9999px;
+    border: 1px solid rgba(148, 163, 184, 0.14);
+    background: rgba(30, 41, 59, 0.7);
+    color: #cbd5e1;
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 0.48rem 0.8rem;
+}
+
+.ops-shell .ops-chip-active {
+    border-color: rgba(14, 165, 233, 0.35);
+    background: linear-gradient(135deg, rgba(14, 165, 233, 0.28), rgba(37, 99, 235, 0.24));
+    color: #f8fafc;
+}
+
+.ops-shell .ops-grid-card {
+    position: relative;
+    overflow: hidden;
+}
+
+.ops-shell .ops-grid-card::after {
+    content: '';
+    position: absolute;
+    inset-inline: 0;
+    bottom: 0;
+    height: 3px;
+    background: linear-gradient(90deg, rgba(56, 189, 248, 0), rgba(56, 189, 248, 0.9), rgba(59, 130, 246, 0));
+    opacity: 0;
+    transition: opacity 180ms ease;
+}
+
+.ops-shell .ops-grid-card:hover::after {
+    opacity: 1;
+}
+
+.ops-shell .ops-scroll::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.ops-shell .ops-scroll::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.ops-shell .ops-scroll::-webkit-scrollbar-thumb {
+    background: rgba(100, 116, 139, 0.45);
+    border-radius: 9999px;
 }
