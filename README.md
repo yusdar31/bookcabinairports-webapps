@@ -96,6 +96,9 @@ Import `postman/ota-webhook-simulation.postman_collection.json` ke Postman, isi 
 - [Runbook Terraform Environments](docs/runbooks/terraform-environments.md)
 - [GitHub Secrets untuk CI/CD](docs/ci-cd/github-secrets.md)
 - [OpenCode Change Log](docs/changes/2026-04-17-opencode-update.md)
+- [AWS MCP Change Log](docs/changes/2026-04-21-aws-mcp.md)
+- [MCP Server untuk Coding Agents](docs/mcp-server.md)
+- [Konfigurasi MCP untuk Codex, OpenCode, dan Antigravity](docs/mcp-agent-config.md)
 - [UptimeRobot Monitoring](docs/monitoring/uptimerobot.md)
 
 ## Catatan Penting
